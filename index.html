@@ -1,0 +1,82 @@
+<html>
+	<style type="text/css">
+		body {
+		  margin: 0;
+		  background-image: url("http://lmj.io/projects/live-web/snoop/background.jpg");
+		  background-position: center center;
+		  background-repeat: no-repeat;
+		  background-attachment: fixed;
+		  background-size: cover;
+		  background-color: #222;
+		}
+
+		#main {
+			margin: 40px;
+			color: #E6686A;
+			width: 300px;
+		}
+
+		#user-input {
+			margin-bottom: 15px;
+		}
+
+	</style>
+	<head>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript">
+		
+			var socket = io.connect('http://162.243.90.150:8080/');
+			var submitButton;
+			
+			socket.on('connect', function() {
+				console.log("Connected");
+			});
+
+			// Receive from any event
+			socket.on('chatmessage', function (data) {
+				console.log(data);
+				var oldMessages = document.getElementById('messages').innerHTML;
+				console.log(oldMessages);
+				document.getElementById('messages').innerHTML = "" + data + '<br>' +  oldMessages;
+			});
+			
+			var sendmessage = function(message) {
+				console.log("chatmessage: " + message);
+				socket.emit('chatmessage', message);
+			};
+
+			//listens for page load, calls init upon load
+			window.addEventListener('load', init);
+			
+			//runs once page is loaded
+			function init() {
+				submitButton = document.getElementById("submit-message");
+				submitButton.addEventListener('click', submitClicked);
+
+			}
+
+			function submitClicked() {
+				var oldMessages = document.getElementById('messages').innerHTML;
+				var newMessage = document.getElementById('message').value;
+				document.getElementById('messages').innerHTML = "" + newMessage + '<br>' +  oldMessages;
+				sendmessage(newMessage);
+			}
+
+
+				
+		</script>	
+
+	</head>
+ <body>
+ <div id="main">
+ 	<div id="user-input">
+		 <input type="text" id="message" name="message">
+		 <input id="submit-message" type="submit" value="submit" >
+	</div>
+	<div id="messages">
+	 No Messages Yet
+	 </div>
+</div>
+ </body>
+</html>
+	
